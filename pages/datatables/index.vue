@@ -2,10 +2,11 @@
   <div>
     <v-switch @change="(e) => setLoading(e)"> </v-switch>
     <v-base-datatable
+      ref="dt"
       :loading="getLoading"
       :items="items"
       :headers="headers"
-      :table-options="{ groupBy: [], itemsPerPage: 5 }"
+      :table-options="{ groupBy: [], itemsPerPage: -1 }"
     >
     </v-base-datatable>
   </div>
@@ -23,6 +24,7 @@ export default {
         {
           text: 'Name',
           value: 'name',
+          default: 'tst',
           align: 'start',
           sortable: false,
           groupable: false,
@@ -34,9 +36,29 @@ export default {
               'single-line': true,
               'hide-details': true,
             },
-            on: {
-              blur: this.itemComponentBlur,
+            on: [
+              {
+                name: 'blur',
+                callback: this.itemComponentBlur,
+              },
+            ],
+          },
+          footer: {
+            vType: 'v-text-field',
+            attrs: {
+              'single-line': true,
+              'hide-details': true,
+              dense: true,
+              value: 2220,
+              outlined: true,
             },
+            on: [
+              {
+                name: 'blur',
+                callback: this.itemComponentBlur,
+              },
+            ],
+            value: '',
           },
         },
         {
@@ -52,6 +74,34 @@ export default {
               'hide-details': true,
               type: 'number',
             },
+            on: [
+              {
+                name: 'blur',
+                callback: this.itemComponentBlur,
+              },
+            ],
+          },
+          footer: {
+            vType: 'v-text-field',
+            attrs: {
+              'single-line': true,
+              'hide-details': true,
+              dense: true,
+              value: 2220,
+              outlined: true,
+            },
+            on: [
+              {
+                name: 'blur',
+                callback: (header, props, $event) => {
+                  console.log('Event:', $event)
+                  console.log('EVENT-Target:', $event.target)
+                  console.log('HEADER:', header)
+                  console.log('PROPS:', props)
+                },
+              },
+            ],
+            value: 'Normal <P>',
           },
         },
         {
@@ -65,25 +115,29 @@ export default {
             attrs: {
               'single-line': true,
               'hide-details': true,
+              key: this.componentKey,
               type: 'boolean',
             },
-            on: {
-              'keyup.space': '$event.target.blur()',
-            },
+            on: [
+              {
+                name: 'change',
+                callback: this.checkboxChange,
+              },
+            ],
           },
         },
         {
           text: 'Created',
           value: 'created',
           groupable: false,
-          type: Boolean,
+          type: Date,
           filters: [],
           component: {
             vType: 'v-data-table-date-picker',
             attrs: {
               'single-line': true,
               'hide-details': true,
-              type: 'boolean',
+              type: 'date',
             },
           },
         },
@@ -132,6 +186,7 @@ export default {
           created: '1975-08-06',
         },
       ],
+      componentKey: 0,
     }
   },
   computed: {
@@ -141,8 +196,16 @@ export default {
     this.setLoading(false)
   },
   methods: {
-    itemComponentBlur: (props, event) => {
-      console.log('blurItemCell :', JSON.stringify(props))
+    itemComponentBlur(header, props, event) {
+      // console.log('Item Event:', event)
+      // console.log('Item Header:', header)
+      // console.log('Item Props:', JSON.stringify(props))
+      // console.log('CURRENT ITEM:', this.$refs.dt.currentItem.val)
+    },
+    checkboxChange(header, props, event) {
+      // console.log('HEADER:', header)
+      // console.log('PROPS:', props)
+      // console.log('VALUE:', event)
     },
     ...mapActions(['setLoading']),
   },
